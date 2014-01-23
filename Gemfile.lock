@@ -2,11 +2,9 @@ GEM
   remote: https://rubygems.org/
   specs:
     ascii_charts (0.9.1)
-    facets (2.9.3)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
   ascii_charts
-  facets
