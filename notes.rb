@@ -1,3 +1,5 @@
+require 'ascii_charts'
+
 cornell_src = {
   "E" => 12.02,
   "T" => 9.10,
