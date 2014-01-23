@@ -20,15 +20,11 @@ class String
 
   attr_accessor :mappings
 
-  def sanitize
-    split(//).sanitize
+  def method_missing(m, *args, &block)
+    split(//).send(m)
   end
 
-  def letter_frequencies
-    split(//).letter_frequencies
-  end
-
-  def substitute new_mapping
+  def substitute! new_mapping
     puts "\n\n"
     puts "text"
     @mappings = {} unless mappings
