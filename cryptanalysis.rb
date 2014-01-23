@@ -11,8 +11,11 @@ class Array
   def letter_frequencies
     # Derived from facets Enumerable#frequency
     # http://rdoc.info/github/rubyworks/facets/master/Enumerable#frequency-instance_method
-    p = Hash.new(0); each{ |v| p[v] += 100*(1.0/self.length)}; p
-    pr = Hash.new(0); each{ |v| pr[v] = p[v].round(2) }; pr
+    p = Hash.new(0)
+    each do |v|
+      p[v] = (p[v] + 100*(1.0/self.length)).round(2)
+    end
+    p
   end
 end
 
