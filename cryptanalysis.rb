@@ -19,13 +19,7 @@ class Array
   end
 
   def caesar_shift n
-    map do |letter|
-      translated = letter.ord - 'a'.ord
-      shifted = translated + n
-      modulated = shifted % 26
-      retranslated = modulated + 'a'.ord
-      retranslated.chr
-    end
+    map { |letter| ((letter.to_alphabet_order + n) % 26).to_ascii_char }
   end
 
   def in_cipher_alphabet char
@@ -60,5 +54,15 @@ class String
     end
 
     puts gsub!(new_mapping.keys[0], new_mapping.values[0])
+  end
+
+  def to_alphabet_order
+    ord - 'a'.ord
+  end
+end
+
+class Fixnum
+  def to_ascii_char
+    (self + 'a'.ord).chr
   end
 end
