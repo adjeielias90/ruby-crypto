@@ -37,7 +37,7 @@ class Array
   end
 
   def shift_with_codeword codeword
-    zip(codeword.chars.cycle).map { |text_char, code_char| text_char.in_cipher_alphabet(code_char) }.join
+    zip(codeword.chars.cycle).map { |text_char, code_char| text_char.in_cipher_alphabet(code_char) }
   end
 end
 
