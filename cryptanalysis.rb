@@ -17,6 +17,28 @@ class Array
     end
     p
   end
+
+  def caesar_shift n
+    map do |letter|
+      translated = letter.ord - 'a'.ord
+      shifted = translated + n
+      modulated = shifted % 26
+      retranslated = modulated + 'a'.ord
+      retranslated.chr
+    end
+  end
+
+  def in_cipher_alphabet char
+    caesar_shift(char.ord - 97)
+  end
+
+  def caesar_shift_map mapping
+    caesar_shift (mapping.keys[0].upcase.ord - mapping.values[0].upcase.ord).abs
+  end
+
+  def shift_with_codeword codeword
+    zip(codeword.chars.cycle).map { |text_char, code_char| text_char.in_cipher_alphabet(code_char) }.join
+  end
 end
 
 class String
@@ -24,7 +46,8 @@ class String
   attr_accessor :mappings
 
   def method_missing(m, *args, &block)
-    split(//).send(m)
+    result = chars.send(m, *args)
+    result.kind_of?(Array) ? result.join : result
   end
 
   def substitute! new_mapping
