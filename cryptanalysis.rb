@@ -2,10 +2,8 @@ require 'ascii_charts'
 
 class Array
 
-  LETTER_FREQUENCY_LOOKUP = ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"]
-
   def sanitize
-    reject { |letter| !LETTER_FREQUENCY_LOOKUP.include? letter.upcase }
+    reject { |letter| !('A'..'Z').include? letter.upcase }
   end
 
   def letter_frequencies
@@ -33,6 +31,7 @@ class Array
   def shift_with_codeword codeword
     zip(codeword.chars.cycle).map { |text_char, code_char| text_char.in_cipher_alphabet(code_char) }
   end
+  alias_method :vigenere, :shift_with_codeword
 end
 
 class String
