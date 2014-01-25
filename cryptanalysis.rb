@@ -1,23 +1,17 @@
-require 'ascii_charts'
+require 'facets'
 
 class Array
 
   def sanitize
-    reject { |letter| !('A'..'Z').include? letter.upcase }
+    select { |letter| ('A'..'Z').include? letter.upcase }
   end
 
   def letter_frequencies
-    # Derived from facets Enumerable#frequency
-    # http://rdoc.info/github/rubyworks/facets/master/Enumerable#frequency-instance_method
-    p = Hash.new(0)
-    each do |v|
-      p[v] = (p[v] + 100*(1.0/self.length)).round(2)
-    end
-    p
+    Hash[frequency.map { |k,v| [k, (v * 100.0/self.length).round(2)] }]
   end
 
   def caesar_shift n
-    map { |letter| ((letter.to_alphabet_order + n) % 26).to_ascii_char }
+    map { |letter| ((letter.to_alphabet_order + n) % 26).to_ascii_char }.join
   end
 
   def in_cipher_alphabet char
@@ -32,16 +26,28 @@ class Array
     zip(codeword.chars.cycle).map { |text_char, code_char| text_char.in_cipher_alphabet(code_char) }
   end
   alias_method :vigenere, :shift_with_codeword
+
+  def chunk_by_identity
+    chunk { |c| c }
+  end
+
+  def consecutive_letters
+    # http://stackoverflow.com/a/8499054/2954849
+    chunk_by_identity.map { |n,a| a.join }
+  end
+
+  def double_letters
+    consecutive_letters.select { |letters| letters.length == 2 }
+  end
+
+  def double_letter_frequencies
+    double_letters.frequency
+  end
 end
 
 class String
 
   attr_accessor :mappings
-
-  def method_missing(m, *args, &block)
-    result = chars.send(m, *args)
-    result.kind_of?(Array) ? result.join : result
-  end
 
   def substitute! new_mapping
     puts "\n\n"
@@ -58,10 +64,78 @@ class String
   def to_alphabet_order
     ord - 'a'.ord
   end
+
+  def n_letter_words n
+    words.select { |word| word.length == n }
+  end
+
+  def word_frequencies
+    words.frequency.sort_by_value
+  end
+
+  def n_letter_word_frequencies n
+    n_letter_words(n).frequency.sort_by_value
+  end
+
+  def one_letter_word_frequencies
+    n_letter_word_frequencies 1
+  end
+
+  def two_letter_word_frequencies
+    n_letter_word_frequencies 2
+  end
+
+  def three_letter_word_frequencies
+    n_letter_word_frequencies 3
+  end
+
+  def four_letter_word_frequencies
+    n_letter_word_frequencies 4
+  end
+
+  def nth_letters n
+    words.map { |word| word.chars[n] }
+  end
+
+  def nth_letter_frequencies n
+    nth_letters(n).frequency.sort_by_value
+  end
+
+  def first_letter_frequencies
+    nth_letter_frequencies 0
+  end
+
+  def second_letter_frequencies
+    nth_letter_frequencies 1
+  end
+
+  def third_letter_frequencies
+    nth_letter_frequencies 2
+  end
+
+  def last_letter_frequencies
+    nth_letter_frequencies(-1)
+  end
+
+  # Treat Strings as Arrays of String chars
+  def method_missing(m, *args, &block)
+    chars.send(m, *args)
+  end
 end
 
 class Fixnum
   def to_ascii_char
     (self + 'a'.ord).chr
+  end
+end
+
+class Hash
+  # http://stackoverflow.com/a/13216103/2954849
+  def sort_by_value
+    Hash[self.sort_by { |k, v| v }.reverse]
+  end
+
+  def max_by_value
+    max_by { |k,v| v }
   end
 end
