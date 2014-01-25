@@ -2,6 +2,7 @@ require 'facets'
 
 class Array
 
+  # TODO: allow spaces and some punctuation
   def sanitize
     select { |letter| ('A'..'Z').include? letter.upcase }
   end
@@ -48,6 +49,11 @@ end
 class String
 
   attr_accessor :mappings
+
+  # Treat Strings as Arrays of String chars
+  def method_missing(m, *args, &block)
+    chars.send(m, *args)
+  end
 
   def substitute! new_mapping
     puts "\n\n"
@@ -117,9 +123,28 @@ class String
     nth_letter_frequencies(-1)
   end
 
-  # Treat Strings as Arrays of String chars
-  def method_missing(m, *args, &block)
-    chars.send(m, *args)
+  def ngrams n
+    each_with_index.map { |c,i| self[i..i+(n-1)] }.select { |letters| letters.length == n }
+  end
+
+  def ngram_frequencies n
+    ngrams.frequency.sort_by_value
+  end
+
+  def bigram_frequencies
+    ngram_frequencies 2
+  end
+
+  def trigram_frequencies
+    ngram_frequencies 3
+  end
+
+  def highest_bigram_frequencies n=5
+    bigram_frequencies.highest_frequencies(n)
+  end
+
+  def highest_trigram_frequencies n=5
+    trigram_frequencies.highest_frequencies(n)
   end
 end
 
@@ -137,5 +162,9 @@ class Hash
 
   def max_by_value
     max_by { |k,v| v }
+  end
+
+  def highest_frequencies n=5
+    Hash[self.sort_by { |k,v| -v }[0..n-1]]
   end
 end
