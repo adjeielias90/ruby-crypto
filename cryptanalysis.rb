@@ -12,11 +12,15 @@ class Array
   end
 
   def caesar_shift n
-    map { |letter| letter =~ /[^A-Za-z]/ ? letter : ((letter.to_alphabet_order + n) % 26).to_ascii_char }.join
+    map do |letter|
+      if letter =~ /[^A-Za-z]/ then letter
+      else ((letter.downcase.to_alphabet_order + n) % 26).to_ascii_char.in_same_case_as(letter)
+      end
+    end.join
   end
 
   def in_cipher_alphabet char
-    caesar_shift(char.ord - 97)
+    caesar_shift(char.downcase.ord - 97)
   end
 
   def caesar_shift_map mapping
@@ -25,6 +29,15 @@ class Array
 
   def all_caesar_shifts
     ('A'..'Z').map { |letter| in_cipher_alphabet(letter) }
+  end
+
+  def caesar_candidates
+    all_caesar_shifts.select.with_index do |text, i|
+      print "[ #{i} ] Checking for words in {a => #{('a'..'z').to_a[i]}}: #{text.slice(0, 20)}... "
+      found_words = text.downcase.gsub(/[^A-Za-z ]/, '').words.take(3).join(" ").any_nontrivial_words?
+      puts found_words ? "\u2713" : "X"
+      found_words
+    end
   end
 
   def shift_with_codeword codeword
@@ -73,6 +86,10 @@ class String
 
   def to_alphabet_order
     ord - 'a'.ord
+  end
+
+  def in_same_case_as letter
+    letter.downcase == letter ? downcase : upcase
   end
 
   def n_letter_words n
@@ -158,10 +175,26 @@ class String
     File.open(dictionary) { |file| yield file }
   end
 
-  def is_word? &block
+  def is_word?
     in_dictionary do |dictionary|
       dictionary.each_line.lazy.map(&:strip).any? { |word| word.include? self }
     end
+  end
+
+  def is_nontrivial_word?
+    is_word? && length > 4
+  end
+
+  def any_words? &block
+    words.any? { |word| word.is_word? }
+  end
+
+  def any_nontrivial_words?
+    words.any? { |word| word.is_nontrivial_word? }
+  end
+
+  def all_words? &block
+    words.all? { |word| word.is_word? }
   end
 end
 
