@@ -12,7 +12,7 @@ class Array
   end
 
   def caesar_shift n
-    map { |letter| ((letter.to_alphabet_order + n) % 26).to_ascii_char }.join
+    map { |letter| letter =~ /[^A-Za-z]/ ? letter : ((letter.to_alphabet_order + n) % 26).to_ascii_char }.join
   end
 
   def in_cipher_alphabet char
@@ -21,6 +21,10 @@ class Array
 
   def caesar_shift_map mapping
     caesar_shift (mapping.keys[0].upcase.ord - mapping.values[0].upcase.ord).abs
+  end
+
+  def all_caesar_shifts
+    ('A'..'Z').map { |letter| in_cipher_alphabet(letter) }
   end
 
   def shift_with_codeword codeword
@@ -124,7 +128,7 @@ class String
   end
 
   def ngrams n
-    each_with_index.map { |c,i| self[i..i+(n-1)] }.select { |letters| letters.length == n }
+    each_with_index.map { |_,i| self[i..i+(n-1)] }.select { |letters| letters.length == n }
   end
 
   def ngram_frequencies n
@@ -145,6 +149,19 @@ class String
 
   def highest_trigram_frequencies n=5
     trigram_frequencies.highest_frequencies(n)
+  end
+
+  def in_dictionary &block
+    dictionaries = ["/usr/share/dict/words", "/usr/share/lib/dict/words", "/usr/lib/dict"]
+    dictionary = dictionaries.select { |dict| File.exists? dict }.first
+    raise StandardError, "No dictionary file" unless dictionary
+    File.open(dictionary) { |file| yield file }
+  end
+
+  def is_word? &block
+    in_dictionary do |dictionary|
+      dictionary.each_line.lazy.map(&:strip).any? { |word| word.include? self }
+    end
   end
 end
 
