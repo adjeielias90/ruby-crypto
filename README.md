@@ -4,12 +4,12 @@ ruby-crypto
 Cryptographic and cryptanalytic algorithms (WIP)
 
 * Cryptanalysis:
-- Frequency analysis tools
+  - Frequency analysis tools
 
 * Cryptograhy:
-- Simple Caesar shift
-- Vigenere cipher
-- simple Diffie-Helman public key distribution
+  - Simple Caesar shift
+  - Vigenere cipher
+  - simple Diffie-Helman public key distribution
 
 
 Writing a simple frequency analysis algorithm in Ruby first.
@@ -22,8 +22,7 @@ Sources for frequencies:
 
 TODO:
 * Language detection and translation:
-- https://github.com/seejohnrun/easy_translate
-
+  - https://github.com/seejohnrun/easy_translate
 * Word similarity:
-- https://github.com/anjlab/rubyfish
-- https://github.com/dbalatero/levenshtein-ffi
+  - https://github.com/anjlab/rubyfish
+  - https://github.com/dbalatero/levenshtein-ffi
