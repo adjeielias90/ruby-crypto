@@ -1,4 +1,4 @@
-require_relative 'cryptanalysis.rb'
+require_relative 'transposition.rb'
 require 'minitest/autorun'
 
 class TestColumnarTransposition < MiniTest::Unit::TestCase
