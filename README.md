@@ -9,6 +9,7 @@ Cryptographic and cryptanalytic algorithms (WIP)
 * Cryptograhy:
   - Simple Caesar shift
   - Vigenere cipher
+  - Columnar transposition cipher
   - simple Diffie-Helman public key distribution
 
 TODO:
